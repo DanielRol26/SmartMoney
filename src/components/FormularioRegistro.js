@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 
 const FormularioRegistro = ({ navigation }) => {
   const [cedula, setCedula] = useState('');
@@ -8,10 +8,49 @@ const FormularioRegistro = ({ navigation }) => {
   const [contrasena, setContrasena] = useState('');
   const [repetirContrasena, setRepetirContrasena] = useState('');
 
+  const registrarUsuario = async () => {
+    if (contrasena !== repetirContrasena) {
+      Alert.alert('Error', 'Las contraseñas no coinciden');
+      return;
+    }
+
+    const usuario = {
+      Cedula: cedula,
+      NombreUsuario: nombre,
+      CorreoElectronico: email,
+      ContrasenaHash: contrasena,
+    };
+
+    console.log('Datos a enviar:', usuario); // Log para verificar los datos antes de enviarlos
+
+    const urlBase = 'http://localhost:3000';
+
+    try {
+      const response = await fetch(`${urlBase}/api/Usuario/Register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuario)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        Alert.alert('Éxito', data.message);
+        navigation.navigate('Login');
+      } else {
+        const errorData = await response.json();
+        Alert.alert('Error', errorData.message || 'Error al registrar el usuario');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo conectar con el servidor');
+    }
+  };
+
   return (
     <View style={estilos.contenedor}>
       <View style={estilos.logoContainer}>
-        <Image source={require('./logo.jpeg')} style={estilos.logo} />
+        <Image source={require('../img/logo.jpeg')} style={estilos.logo} />
       </View>
       <Text style={estilos.titulo}>¡Crea una cuenta!</Text>
       <TextInput
@@ -47,7 +86,7 @@ const FormularioRegistro = ({ navigation }) => {
         onChangeText={setRepetirContrasena}
         secureTextEntry
       />
-      <TouchableOpacity style={estilos.boton} onPress={() => navigation.navigate('Dashboard')}>
+      <TouchableOpacity style={estilos.boton} onPress={registrarUsuario}>
         <Text style={estilos.textoBoton}>Registrar cuenta</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -61,49 +100,47 @@ const estilos = StyleSheet.create({
   contenedor: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
   logoContainer: {
-    marginBottom: 30,
+    alignItems: 'center',
+    marginBottom: 20,
   },
   logo: {
     width: 100,
     height: 100,
-    resizeMode: 'contain',
   },
   titulo: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
   },
   input: {
-    width: '100%',
-    height: 40,
-    borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    fontSize: 16,
   },
   boton: {
-    width: '100%',
-    height: 40,
-    backgroundColor: '#85dce4',
-    justifyContent: 'center',
+    backgroundColor: '#4A69FF',
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
-    borderRadius: 5,
-    marginBottom: 10,
   },
   textoBoton: {
-    color: '#fff',
+    color: '#FFFFFF',
+    fontSize: 18,
     fontWeight: 'bold',
   },
   textoEnlace: {
-    color: '#85dce4',
-    marginTop: 10,
+    color: '#4A69FF',
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
   },
 });
 

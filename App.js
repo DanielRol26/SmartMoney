@@ -2,9 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'react-native';
-import Dashboard from './components/Dashboard';
-import FormularioLogin from './components/FormularioLogin';
-import FormularioRegistro from './components/FormularioRegistro';
+import Navigation from './Navigation';
+import FormularioLogin from './src/components/FormularioLogin';
+import FormularioRegistro from './src/components/FormularioRegistro';
 
 const Stack = createStackNavigator();
 
@@ -35,8 +35,8 @@ export default function App() {
           options={{ title: 'Registrarse' }}
         />
         <Stack.Screen 
-          name="Dashboard" 
-          component={Dashboard} 
+          name="Navigation"
+          component={Navigation} 
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
